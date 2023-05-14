@@ -1,10 +1,25 @@
 
 
+using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using UyelikSistemi.WebUI.DataAccess.Contexts;
+using UyelikSistemi.WebUI.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDbContext<AppDbContext>(x =>
+{
+    x.UseSqlServer(builder.Configuration.GetConnectionString("SqlConnection"), option =>
+    {
+        option.MigrationsAssembly(Assembly.GetAssembly(typeof(AppDbContext)).GetName().Name);
+    });
+});
+
+//user ve role tanýmlamalarýnýn olduðu class larýn da eklenmesi aþaðýda olduðu gibi saðlanýlýr.
+builder.Services.AddIdentity<AppUser,AppRole>().AddEntityFrameworkStores<AppDbContext>();   
 
 
 var app = builder.Build();
